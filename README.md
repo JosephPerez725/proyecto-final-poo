@@ -13,8 +13,8 @@
 | Campo | Descripción |
 |---|---|
 | **Nombre del proyecto:** | RutaRent – Sistema de reservas y alquiler de autos |
-| **Tipo de aplicación:** | ☐ Escritorio ☐ Web ☐ Móvil ☑ Otro: Consola |
-| **Lenguaje / entorno de desarrollo:** | Java 21, Visual Studio Code y Ubuntu (WSL) |
+| **Tipo de aplicación:** | ☐ Escritorio ☑ Web ☐ Móvil ☐ Otro: __________ |
+| **Lenguaje / entorno de desarrollo:** | Java 21 para el backend, HTML/CSS/JavaScript para el frontend y PostgreSQL con JDBC como opción propuesta de persistencia. Visual Studio Code y Ubuntu (WSL) para el desarrollo. |
 | **Repositorio Git (URL):** | https://github.com/JosephPerez725/proyecto-final-poo |
 | **Uso de Inteligencia Artificial:** | ☐ No ☑ Sí (describir a continuación) |
 
@@ -28,7 +28,7 @@
 
 ### Resumen breve
 
-> RutaRent es una aplicación de consola para el encargado de una agencia de alquiler de autos.  
+> RutaRent es una aplicación web para el encargado de una agencia de alquiler de autos.  
 > Permite reservar un vehículo para un cliente, registrar su entrega y cerrar el alquiler cuando se devuelve.  
 > El sistema ayuda a evitar reservas superpuestas para el mismo auto y calcula el importe final según el plan contratado.
 
@@ -52,38 +52,43 @@ Marca los que planeas usar:
 - [x] Polimorfismo
 - [x] Interfaces o clases abstractas
 
-**Aplicación prevista.** `Alquiler` vinculará un cliente, un vehículo y el plan contratado. Sus atributos privados y sus operaciones de entrega y devolución protegerán el estado. Los constructores validarán los datos iniciales. La clase abstracta `PlanAlquiler` declarará `calcularImporte(dias)`. `PlanDiario` y `PlanSemanal` heredarán de ella y aplicarán reglas de cobro diferentes. Al cerrar el alquiler, se hará la misma llamada al plan contratado y se usará el importe que devuelva.
+**Aplicación prevista.** `Rental` representa cada alquiler y vincula un cliente, un vehículo, un período y el plan contratado. El constructor valida los datos iniciales. Las operaciones de entrega y devolución protegen el estado del alquiler. La clase abstracta `RentalPlan` concentrará la validación común de los días y delegará el cálculo a `DailyPlan` y `WeeklyPlan`. El cierre del alquiler invoca el cálculo a través de `RentalPlan`.
 
-**Decisiones de diseño.** La consola se encargará de leer y mostrar datos, el alquiler de controlar su estado y el plan de calcular la tarifa. El servicio recibirá por constructor una implementación de `RepositorioAlquileres`, la interfaz para consultar y registrar alquileres. Esto permitirá probar el flujo con un repositorio en memoria. Las reglas rechazarán fechas inválidas, reservas superpuestas y devoluciones duplicadas antes de registrar cambios. Pasar las fechas como datos permitirá comprobar los cálculos con casos repetibles. Se reutilizará la validación común de duración y el programa se ejecutará con Java 21, sin rutas fijas.
+**Bajo acoplamiento.** `RentalRepository` define las operaciones para consultar y guardar alquileres. `JdbcRentalRepository` implementará esas operaciones con SQL. `RentalService` recibirá el repositorio por constructor y coordinará la consulta de disponibilidad y el registro de los cambios. La API HTTP recibirá las solicitudes del formulario y devolverá el resultado o un mensaje de validación.
+
+**Portabilidad y accesibilidad.** La configuración de conexión se leerá desde el entorno del backend. El formulario tendrá etiquetas visibles asociadas a cada campo, navegación por teclado y mensajes de error en texto. Las comprobaciones usarán fechas conocidas para verificar cruces, transiciones de estado y ambos planes de cobro.
 
 ### Persistencia de datos
 
 - [ ] Archivos locales
-- [ ] Base de datos
-- [x] En memoria (temporal)
+- [x] Base de datos
+- [ ] En memoria (temporal)
 - [ ] Otro: __________
 
-**Capa objetivo propuesta.** Lógica de negocio en Java con un menú de consola y almacenamiento en memoria. Los registros estarán disponibles durante cada ejecución. Este alcance permite demostrar el proceso completo de reserva, entrega y devolución.
+**Capa objetivo.** Aplicación web con un formulario y una lista de alquileres, una API HTTP en Java 21 y persistencia en una base de datos relacional. La demostración recorrerá una reserva, su entrega y devolución desde el navegador. Después de reiniciar el backend se verificará que el registro permanezca en la base de datos.
+
+**Configuración de conexión.** El backend leerá `DB_URL`, `DB_USER` y `DB_PASSWORD` de su entorno. Se documentarán los nombres de las variables y ejemplos sin credenciales reales.
 
 **Diagrama inicial de clases**
 
 ```mermaid
 classDiagram
-    class PlanAlquiler {
+    class RentalPlan {
         <<abstract>>
-        +calcularImporte(dias)
+        +calculateAmount(days)
     }
-    class RepositorioAlquileres {
+    class RentalRepository {
         <<interface>>
     }
-    PlanAlquiler <|-- PlanDiario
-    PlanAlquiler <|-- PlanSemanal
-    Alquiler --> PlanAlquiler : plan contratado
-    Alquiler --> Cliente : cliente
-    Alquiler --> Vehiculo : vehículo
-    ServicioAlquileres ..> Alquiler
-    ServicioAlquileres --> RepositorioAlquileres
-    RepositorioAlquileres <|.. RepositorioAlquileresEnMemoria
+    RentalPlan <|-- DailyPlan
+    RentalPlan <|-- WeeklyPlan
+    Rental --> RentalPlan : plan contratado
+    Rental --> Customer : cliente
+    Rental --> Vehicle : vehículo
+    Rental *-- RentalPeriod : período reservado
+    RentalService ..> Rental
+    RentalService --> RentalRepository
+    RentalRepository <|.. JdbcRentalRepository
 ```
 
 ---
