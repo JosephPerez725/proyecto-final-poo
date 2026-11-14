@@ -122,12 +122,3 @@ Declaro que:
 | **Firma docente:** | |
 | **Fecha de revisión:** | |
 
----
-
-> **Instrucciones para entrega:**
-> - Guarda este archivo como `README.md` dentro de tu repositorio Git.
-> - Completa todas las secciones antes de tu presentación inicial.
-> - No borres las casillas ni el formato para garantizar uniformidad del curso.
-> - El docente revisará y aprobará esta propuesta antes del desarrollo completo.
-
----
