@@ -1,4 +1,5 @@
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class RentalPeriod{
     private final LocalDate startDate;
@@ -17,5 +18,19 @@ public class RentalPeriod{
         this.startDate = startDate;
         this.endDate = endDate;
     }
+
+    public long getDays(){
+        return ChronoUnit.DAYS.between(startDate, endDate);
+    }
+
+    public LocalDate getStartDate() {
+    return startDate;
+    }
+
+    public LocalDate getEndDate() {
+    return endDate;
+    }
+
+
 
 }
