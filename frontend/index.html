@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>RutaRent � Alquileres</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Ir al contenido</a>
+  <aside class="sidebar" aria-label="Navegaci�n principal">
+    <a class="brand" href="#rentals" aria-label="RutaRent, inicio"><span class="brand-mark" aria-hidden="true">R<span>r</span></span><span>RutaRent<span class="brand-caption">Gesti�n de alquileres</span></span></a>
+    <nav>
+      <button class="nav-item selected" data-view="rentals" aria-current="page"><span aria-hidden="true">?</span> Alquileres</button>
+      <button class="nav-item" data-view="vehicles"><span aria-hidden="true">?</span> Veh�culos</button>
+      <button class="nav-item" data-view="customers"><span aria-hidden="true">?</span> Clientes</button>
+    </nav>
+    <div class="sidebar-bottom"><span class="avatar" aria-hidden="true">JP</span><span>Joseph Perez<small>Encargado de agencia</small></span></div>
+  </aside>
+  <div class="workspace">
+    <header class="topbar"><span id="breadcrumb">Operaciones / Alquileres</span><button id="connection-button" class="connection-button" type="button">Datos de ejemplo � Cambiar</button></header>
+    <main id="main" tabindex="-1">
+      <div id="mode-banner" class="mode-banner">Vista de prueba. Las acciones usan datos de ejemplo que se reinician al recargar.</div>
+      <div id="page-error" class="error-banner" role="alert" hidden></div>
+      <section class="page-heading"><div><p class="eyebrow">RUTARENT / OPERACIONES</p><h1 id="page-title">Control de alquileres</h1><p id="page-date" class="muted"></p></div><button id="new-rental" class="button primary" type="button"><span aria-hidden="true">+</span> Nueva reserva</button></section>
+      <section id="rental-view">
+        <div class="metrics" aria-label="Resumen de alquileres">
+          <article class="metric"><span>Alquileres activos</span><strong id="active-count">-</strong><small>Veh�culos en circulaci�n</small></article>
+          <article class="metric"><span>Reservas pendientes</span><strong id="reserved-count">-</strong><small>Por entregar</small></article>
+          <article class="metric"><span>Devoluciones de hoy</span><strong id="due-count">-</strong><small id="overdue-count">-</small></article>
+          <article class="metric metric-dark"><span>Alquileres cerrados</span><strong id="closed-count">-</strong><small>Devoluciones registradas</small></article>
+        </div>
+        <section class="panel" aria-labelledby="list-title">
+          <div class="panel-heading"><div><h2 id="list-title">Registro de alquileres</h2><p id="result-count" class="muted" role="status"></p></div><label class="search"><span class="sr-only">Buscar por cliente, veh�culo o reserva</span><input id="search" type="search" placeholder="Buscar cliente, veh�culo o reserva." autocomplete="off"></label></div>
+          <div class="filter-row" role="group" aria-label="Filtrar por estado">
+            <button class="filter selected" data-status="ALL" aria-pressed="true">Todos</button><button class="filter" data-status="RESERVED" aria-pressed="false">Reservados</button><button class="filter" data-status="ACTIVE" aria-pressed="false">Activos</button><button class="filter" data-status="CLOSED" aria-pressed="false">Cerrados</button>
+          </div>
+          <div class="table-scroll"><table><caption class="sr-only">Alquileres, fechas y acciones disponibles</caption><thead><tr><th scope="col">Reserva / cliente</th><th scope="col">Veh�culo</th><th scope="col">Per�odo</th><th scope="col">Plan</th><th scope="col">Estado</th><th scope="col" class="numeric">Importe</th><th scope="col">Acci�n</th></tr></thead><tbody id="rental-rows"></tbody></table></div>
+          <div id="empty-state" class="empty-state" hidden><h3>No encontramos alquileres</h3><p>Cambia la b�squeda o el filtro, o registra una nueva reserva.</p><button id="clear-filters" class="button secondary" type="button">Ver todos</button></div>
+          <div class="table-footer"><span>Diario por d�a � Semanal por semana iniciada</span><button id="refresh" type="button" class="text-button">Actualizar datos</button></div>
+        </section>
+      </section>
+      <section id="vehicle-view" hidden aria-label="Veh�culos"><div id="vehicle-cards" class="directory-grid"></div></section>
+      <section id="customer-view" hidden aria-label="Clientes"><div class="panel table-scroll"><table><thead><tr><th scope="col">Cliente</th><th scope="col">Identificador</th><th scope="col">Alquileres registrados</th></tr></thead><tbody id="customer-rows"></tbody></table></div></section>
+      <footer class="page-footer">RutaRent <span>Reservas � Entregas � Devoluciones</span></footer>
+    </main>
+  </div>
+  <dialog id="reservation-dialog" class="reservation-dialog" aria-labelledby="reservation-title">
+    <form id="reservation-form">
+      <div class="dialog-heading"><div><p class="eyebrow">NUEVA OPERACI�N</p><h2 id="reservation-title">Reservar un veh�culo</h2></div><button type="button" class="close-button" data-close="reservation-dialog" aria-label="Cerrar formulario">�</button></div>
+      <p class="dialog-intro">Selecciona el cliente, el veh�culo y las fechas de su viaje.</p>
+      <div id="reservation-error" class="error-banner" role="alert" hidden></div>
+      <div class="form-grid"><label>Cliente<select id="customer" name="customerId" required><option value="">Seleccionar cliente</option></select></label><label>Veh�culo<select id="vehicle" name="vehicleId" required><option value="">Seleccionar veh�culo</option></select></label><label>Fecha de retiro<input id="start-date" name="startDate" type="date" required></label><label>Fecha de devoluci�n<input id="end-date" name="endDate" type="date" required aria-describedby="date-hint date-error"></label></div>
+      <p id="date-hint" class="field-hint">La devoluci�n debe ser posterior al retiro. El per�odo termina al comenzar el d�a de devoluci�n.</p><p id="date-error" class="field-error" hidden></p>
+      <fieldset class="plan-fieldset"><legend>Plan de alquiler</legend><div class="plan-options"><label class="plan-option"><input type="radio" name="plan" value="DAILY" checked><span><strong>Diario</strong><small>Tarifa � d�as</small></span></label><label class="plan-option"><input type="radio" name="plan" value="WEEKLY"><span><strong>Semanal</strong><small>Semanas iniciadas</small></span></label></div></fieldset>
+      <label class="rate-label"><span id="rate-label">Tarifa diaria (Bs)</span><input id="rate" name="rate" type="number" min="0.01" step="0.01" inputmode="decimal" value="200" required aria-describedby="rate-hint"></label><p id="rate-hint" class="field-hint">Tarifa acordada con el cliente para este alquiler.</p>
+      <div class="booking-summary" aria-live="polite"><span id="period-summary">Selecciona las fechas</span><strong id="amount-summary">-</strong><small id="quote-note">Estimaci�n visual. Java confirmar� el importe al conectar la API.</small></div>
+      <div class="dialog-actions"><button class="button secondary" type="button" data-close="reservation-dialog">Cancelar</button><button id="save-reservation" class="button primary" type="submit">Crear reserva de prueba</button></div>
+    </form>
+  </dialog>
+  <dialog id="action-dialog" aria-labelledby="action-title"><form id="action-form"><div class="dialog-heading"><h2 id="action-title">Confirmar operaci�n</h2><button type="button" class="close-button" data-close="action-dialog" aria-label="Cerrar confirmaci�n">�</button></div><p id="action-description"></p><div id="action-error" class="error-banner" role="alert" hidden></div><label id="return-date-field" hidden>Fecha de devoluci�n real<input id="return-date" type="date"></label><p id="return-note" class="field-hint" hidden>El importe se ajustar� a los d�as transcurridos y al plan contratado.</p><div class="dialog-actions"><button class="button secondary" type="button" data-close="action-dialog">Cancelar</button><button id="confirm-action" class="button primary" type="submit">Confirmar</button></div></form></dialog>
+  <dialog id="connection-dialog" aria-labelledby="connection-title"><form id="connection-form"><div class="dialog-heading"><h2 id="connection-title">Origen de los datos</h2><button type="button" class="close-button" data-close="connection-dialog" aria-label="Cerrar conexi�n">�</button></div><p>La vista de prueba permite recorrer las pantallas mientras desarrollas Java. Para usar datos reales, conecta una API compatible con el contrato de frontend/README.md.</p><label>URL base de la API<input id="api-url" type="url" placeholder="http://localhost:8080/api" aria-describedby="api-hint"></label><p id="api-hint" class="field-hint">La base de datos y sus credenciales se configuran en el backend.</p><div id="connection-error" class="error-banner" role="alert" hidden></div><div class="dialog-actions"><button id="use-demo" type="button" class="button secondary">Usar ejemplo</button><button id="connect-api" type="submit" class="button primary">Conectar API</button></div></form></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
